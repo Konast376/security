@@ -18,8 +18,8 @@ import java.util.UUID;
 @Table(name = "diary")
 public class Diary extends BaseEntity {
 
-    @Column(name = "writer_id", nullable = false)
-    private UUID writerId;
+    @Column(name = "owner", nullable = false)
+    private String owner;
 
     @Column(name = "title", nullable = false)
     private String title;

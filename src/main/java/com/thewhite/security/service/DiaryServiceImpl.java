@@ -27,11 +27,11 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Transactional
     public Diary create(@NonNull CreateDiaryArgument argument) {
-        Guard.checkArgumentExists(argument.getWriterId(), DiaryErrorInfo.WRITER_ID_IS_MANDATORY);
+        Guard.checkArgumentExists(argument.getOwner(), DiaryErrorInfo.WRITER_ID_IS_MANDATORY);
         Guard.checkArgumentExists(trimToNull(argument.getTitle()), DiaryErrorInfo.TITLE_IS_MANDATORY);
 
         return repository.save(Diary.builder()
-                                    .writerId(argument.getWriterId())
+                                    .owner(argument.getOwner())
                                     .title(argument.getTitle())
                                     .record(argument.getRecord())
                                     .recordDate(argument.getRecordDate())
@@ -41,6 +41,11 @@ public class DiaryServiceImpl implements DiaryService {
     @Transactional(readOnly = true)
     public Diary getExisting(@NonNull UUID id) {
         return repository.findById(id).orElseThrow(WSNotFoundException.of(DiaryErrorInfo.NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Diary getByOwner(String owner) {
+        return repository.findByOwner(owner).orElseThrow(WSNotFoundException.of(DiaryErrorInfo.NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

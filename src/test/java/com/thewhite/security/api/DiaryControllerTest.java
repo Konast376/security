@@ -1,5 +1,6 @@
 package com.thewhite.security.api;
 
+import com.google.common.collect.Lists;
 import com.thewhite.security.api.controller.DiaryController;
 import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;
@@ -20,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.testcontainers.shaded.com.google.common.collect.Lists;
 
 import java.util.UUID;
 
@@ -88,11 +88,11 @@ public class DiaryControllerTest {
     @Test
     void get() {
         //Arrange
-        Diary author = mock(Diary.class);
-        when(service.getExisting(id)).thenReturn(author);
+        Diary diary = mock(Diary.class);
+        when(service.getExisting(id)).thenReturn(diary);
 
         DiaryDto dto = mock(DiaryDto.class);
-        when(mapper.toDto(author)).thenReturn(dto);
+        when(mapper.toDto(diary)).thenReturn(dto);
 
         //Act
         DiaryDto result = controller.get(id);

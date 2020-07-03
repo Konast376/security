@@ -20,7 +20,7 @@ public class CreateDiaryDto {
     private UUID id;
 
     @ApiModelProperty("Идентификатор автора записи дневника")
-    private UUID writerId;
+    private String owner;
 
     @ApiModelProperty("Заголовок записи дневника")
     private String title;

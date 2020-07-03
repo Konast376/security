@@ -14,6 +14,8 @@ public interface DiaryService {
 
     Diary getExisting(@NonNull UUID id);
 
+    Diary getByOwner(@NonNull String owner);
+
     Page<Diary> getAll(@NonNull Pageable pageable);
 
     Diary update(@NonNull UUID id, @NonNull UpdateDiaryArgument argument);

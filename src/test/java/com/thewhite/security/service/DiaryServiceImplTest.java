@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
         CreateDiaryArgument argument = mock(CreateDiaryArgument.class);
         when(argument.getRecord()).thenReturn("firstRecord");
         when(argument.getTitle()).thenReturn("1");
-        when(argument.getWriterId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        when(argument.getOwner()).thenReturn("user1");
         when(argument.getRecordDate()).thenReturn(Timestamp.valueOf("2019-05-20 21:15:30.0"));
 
 
@@ -68,7 +68,7 @@ import static org.mockito.Mockito.*;
 
         softly.then(captorValue.getRecord()).isEqualTo(argument.getRecord());
         softly.then(captorValue.getTitle()).isEqualTo(argument.getTitle());
-        softly.then(captorValue.getWriterId()).isEqualTo(argument.getWriterId());
+        softly.then(captorValue.getOwner()).isEqualTo(argument.getOwner());
         softly.then(captorValue.getRecordDate()).isEqualTo(argument.getRecordDate());
 
         verifyNoMoreInteractions(repository);
@@ -78,7 +78,7 @@ import static org.mockito.Mockito.*;
     void createWhenWriterIdIsNull(){
         //Arrange
         CreateDiaryArgument argument = mock(CreateDiaryArgument.class);
-        when(argument.getWriterId()).thenReturn(null);
+        when(argument.getOwner()).thenReturn(null);
 
         //Act
         GuardCheck.guardCheck(() -> service.create(argument),
@@ -94,7 +94,7 @@ import static org.mockito.Mockito.*;
     void createWhenTitleIsNull(){
         //Arrange
         CreateDiaryArgument argument = mock(CreateDiaryArgument.class);
-        when(argument.getWriterId()).thenReturn(id);
+        when(argument.getOwner()).thenReturn("user1");
         when(argument.getTitle()).thenReturn(null);
 
         //Act
@@ -115,6 +115,19 @@ import static org.mockito.Mockito.*;
 
         //Act
         Diary result = service.getExisting(id);
+
+        //Assert
+        assertEquals(diary, result);
+    }
+
+    @Test
+    void getByOwner() {
+        //Arrange
+        Diary diary = mock(Diary.class);
+        when(repository.findByOwner("owner")).thenReturn(Optional.of(diary));
+
+        //Act
+        Diary result = service.getByOwner("owner");
 
         //Assert
         assertEquals(diary, result);

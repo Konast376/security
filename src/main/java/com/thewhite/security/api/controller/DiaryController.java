@@ -4,16 +4,20 @@ import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.security.dto.UpdateDiaryDto;
 import com.thewhite.security.mapper.DiaryMapper;
+import com.thewhite.security.service.AuthService;
 import com.thewhite.security.service.DiaryService;
 import com.thewhite.security.service.argument.CreateDiaryArgument;
 import com.thewhite.security.service.argument.UpdateDiaryArgument;
 import com.whitesoft.api.dto.CollectionDTO;
 import com.whitesoft.api.mappers.MapperUtils;
 import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +27,7 @@ import java.util.UUID;
 @RequestMapping("/diary")
 public class DiaryController {
 
+    private final AuthService authService;
     private final DiaryService service;
     private final DiaryMapper mapper;
 
@@ -31,7 +36,7 @@ public class DiaryController {
     @ResponseStatus(HttpStatus.CREATED)
     public DiaryDto create(@RequestBody CreateDiaryDto createDiaryDto) {
         CreateDiaryArgument createArgument = CreateDiaryArgument.builder()
-                                                                .writerId(createDiaryDto.getWriterId())
+                                                                .owner(createDiaryDto.getOwner())
                                                                 .title(createDiaryDto.getTitle())
                                                                 .record(createDiaryDto.getRecord())
                                                                 .recordDate(createDiaryDto.getRecordDate())
@@ -74,4 +79,13 @@ public class DiaryController {
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
+
+    @ApiOperation("Записи пользователя")
+    @RequestMapping(value = "/owner", method = RequestMethod.GET)
+    public DiaryDto getUserDetails() {
+       String owner = authService.getAuthorizedOwnerName();
+       return MapperUtils.getMapper(mapper::toDto)
+               .apply(service.getByOwner(owner));
+    }
+
 }

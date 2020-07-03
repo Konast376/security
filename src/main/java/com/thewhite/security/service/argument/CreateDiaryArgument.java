@@ -13,7 +13,7 @@ public class CreateDiaryArgument {
     private UUID id;
 
     /** Идентификатор пользователя */
-    private UUID writerId;
+    private String owner;
 
     /** Заголовок записи дневника */
     private String title;

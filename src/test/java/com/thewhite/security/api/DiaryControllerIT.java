@@ -37,7 +37,7 @@ public class DiaryControllerIT {
                                          .id(id)
                                          .title("1")
                                          .record("first")
-                                         .writerId(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                                         .owner("user1")
                                          .recordDate(Timestamp.valueOf("2019-05-20 21:15:30.0"))
                                          .build();
 
@@ -50,7 +50,7 @@ public class DiaryControllerIT {
                                                 .id(id)
                                                 .title("1")
                                                 .record("first")
-                                                .writerId(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                                                .owner("user1")
                                                 .recordDate(Timestamp.valueOf("2019-05-20 21:15:30.0"))
                                                 .build();
         // Act

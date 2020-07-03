@@ -1,9 +1,12 @@
 package com.thewhite.security.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.database.rider.core.api.dataset.DataSet;
 import com.jupiter.tools.spring.test.postgres.annotation.meta.EnablePostgresIntegrationTest;
 import com.jupiter.tools.spring.test.web.annotation.EnableRestTest;
 import com.thewhite.util.test.matcher.CustomAssertion;
+import com.thewhite.util.test.mvc.MvcRequester;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -56,33 +59,6 @@ public class AuthIT {
 
     @Test
     void testGetAssessTokenWithExitingUserAndReturnRefreshToken() throws Exception {
-
-        OAuth2AccessToken response = verifyAuthorization(name, password);
-        // Проверяем получение refresh_token
-        MvcResult result = mockMvc.perform(post(tokenEndpoint)
-                                                   .param("client_id", clientId)
-                                                   .param("client_secret", clientSecret)
-                                                   .param("refresh_token", response.getRefreshToken().getValue())
-                                                   .param("grant_type", "refresh_token")
-                                                   .param("scope", scope)
-                                                   .header("Authorization", "Basic " + authHeader))
-
-                                  .andExpect(status().isOk())
-                                  .andReturn();
-
-        response = mapper.readValue(result.getResponse().getContentAsString(), OAuth2AccessToken.class);
-
-        CustomAssertion.assertThat(response)
-                       .lazyMatch(OAuth2AccessToken::getValue, Matchers.notNullValue())
-                       .lazyMatch(OAuth2AccessToken::getRefreshToken, Matchers.notNullValue())
-                       .lazyMatch(OAuth2AccessToken::getScope, Matchers.contains(scope))
-                       .lazyMatch(OAuth2AccessToken::getExpiresIn, Matchers.notNullValue())
-                       .lazyCheck(OAuth2AccessToken::getTokenType, "bearer")
-                       .check();
-    }
-
-    protected OAuth2AccessToken verifyAuthorization(String name, String password) throws Exception {
-
         //Act
         MvcResult result = mockMvc.perform(post(tokenEndpoint)
                                                    .param("client_id", clientId)
@@ -101,11 +77,21 @@ public class AuthIT {
         CustomAssertion.assertThat(response)
                        .lazyMatch(OAuth2AccessToken::getValue, Matchers.notNullValue())
                        .lazyMatch(OAuth2AccessToken::getRefreshToken, Matchers.notNullValue())
-                       .lazyMatch(OAuth2AccessToken::getExpiresIn, Matchers.notNullValue())
                        .lazyMatch(OAuth2AccessToken::getScope, Matchers.contains(scope))
+                       .lazyMatch(OAuth2AccessToken::getExpiresIn, Matchers.notNullValue())
                        .lazyCheck(OAuth2AccessToken::getTokenType, "bearer")
                        .check();
-
-        return response;
     }
+
+    @Test
+    void whenUnauthorized() throws Exception {
+        //Act
+        MvcRequester
+                .on(mockMvc)
+                .to("/diary/owner").get()
+                .doExpect(status().isUnauthorized());
+
+    }
+
+
 }
