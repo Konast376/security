@@ -1,0 +1,1 @@
+Простой CRUD with Spring Security
