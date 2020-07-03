@@ -1,4 +1,4 @@
-package com.thewhite.cadastral.auth.config;
+package com.thewhite.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

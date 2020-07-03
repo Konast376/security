@@ -12,7 +12,6 @@ import com.thewhite.security.service.argument.UpdateDiaryArgument;
 import com.whitesoft.api.dto.CollectionDTO;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,11 +52,10 @@ public class DiaryControllerTest {
         CreateDiaryDto createDto = mock(CreateDiaryDto.class);
 
         Diary savedRecord = mock(Diary.class);
-        CreateDiaryArgument argument = mock(CreateDiaryArgument.class);
-        when(service.create(argument)).thenReturn(savedRecord);
+        when(service.create(any(CreateDiaryArgument.class))).thenReturn(savedRecord);
 
         DiaryDto dto = mock(DiaryDto.class);
-        when(mapper.toDto(savedRecord)).thenReturn(dto);
+        when(mapper.toDto(any(Diary.class))).thenReturn(dto);
 
         //Act
         DiaryDto result = controller.create(createDto);
@@ -106,14 +104,13 @@ public class DiaryControllerTest {
     @Test
     void update() {
         //Arrange
-        UpdateDiaryArgument argument = mock(UpdateDiaryArgument.class);
         UpdateDiaryDto updateDto = mock(UpdateDiaryDto.class);
 
         Diary updated = mock(Diary.class);
-        when(service.update(id, argument)).thenReturn(updated);
+        when(service.update(any(UUID.class), any(UpdateDiaryArgument.class))).thenReturn(updated);
 
         DiaryDto dto = mock(DiaryDto.class);
-        when(mapper.toDto(updated)).thenReturn(dto);
+        when(mapper.toDto(any(Diary.class))).thenReturn(dto);
 
         //Act
         DiaryDto result = controller.update(id, updateDto);
