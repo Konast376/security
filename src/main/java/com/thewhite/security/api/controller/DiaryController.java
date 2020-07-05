@@ -87,5 +87,4 @@ public class DiaryController {
        return MapperUtils.getMapper(mapper::toDto)
                .apply(service.getByOwner(owner));
     }
-
 }

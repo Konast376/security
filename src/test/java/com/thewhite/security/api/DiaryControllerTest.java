@@ -7,6 +7,7 @@ import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.security.dto.UpdateDiaryDto;
 import com.thewhite.security.mapper.DiaryMapper;
 import com.thewhite.security.model.Diary;
+import com.thewhite.security.service.AuthService;
 import com.thewhite.security.service.DiaryService;
 import com.thewhite.security.service.argument.CreateDiaryArgument;
 import com.thewhite.security.service.argument.UpdateDiaryArgument;
@@ -43,6 +44,9 @@ public class DiaryControllerTest {
 
     @Mock
     DiaryService service;
+
+    @Mock
+    AuthService authService;
 
     private final UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -126,5 +130,24 @@ public class DiaryControllerTest {
 
         //Assert
         verify(service).delete(id);
+    }
+
+    @Test
+    void getUserDetails() {
+        //Arrange
+        String owner = "owner";
+        when(authService.getAuthorizedOwnerName()).thenReturn(owner);
+
+        Diary diary = mock(Diary.class);
+        when(service.getByOwner(owner)).thenReturn(diary);
+
+        DiaryDto dto = mock(DiaryDto.class);
+        when(mapper.toDto(any(Diary.class))).thenReturn(dto);
+
+        //Act
+        DiaryDto result = controller.getUserDetails();
+
+        //Assert
+        Assertions.assertThat(result).isEqualTo(dto);
     }
 }
