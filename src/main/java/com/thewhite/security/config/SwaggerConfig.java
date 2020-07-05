@@ -83,6 +83,4 @@ public class SwaggerConfig {
                               .forPaths(PathSelectors.none())
                               .build();
     }
-
 }
-

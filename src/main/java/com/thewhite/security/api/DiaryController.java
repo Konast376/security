@@ -1,4 +1,4 @@
-package com.thewhite.security.api.controller;
+package com.thewhite.security.api;
 
 import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;

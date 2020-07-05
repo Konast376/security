@@ -9,9 +9,6 @@ import java.util.UUID;
 @Value
 @Builder
 public class UpdateDiaryArgument {
-    /** Идентификатор записи дневника */
-    private UUID id;
-
     /** Заголовок записи дневника */
     private String title;
 

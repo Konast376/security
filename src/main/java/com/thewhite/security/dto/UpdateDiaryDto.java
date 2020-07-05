@@ -16,9 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @ApiModel(description = "Данные обновления записи дневника")
 public class UpdateDiaryDto {
-    @ApiModelProperty("Идентификатор записи дневника")
-    private UUID id;
-
     @ApiModelProperty("Заголовок записи дневника")
     private String title;
 

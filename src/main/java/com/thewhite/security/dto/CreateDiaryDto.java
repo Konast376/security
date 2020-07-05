@@ -16,9 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @ApiModel(description = "Данные создания записи дневника")
 public class CreateDiaryDto {
-    @ApiModelProperty("Идентификатор записи дневника")
-    private UUID id;
-
     @ApiModelProperty("Идентификатор автора записи дневника")
     private String owner;
 

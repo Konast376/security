@@ -47,7 +47,6 @@ public class DiaryControllerIT {
     void create() throws Exception {
         // Arrange
         CreateDiaryDto diaryDto = CreateDiaryDto.builder()
-                                                .id(id)
                                                 .title("1")
                                                 .record("first")
                                                 .owner("user1")

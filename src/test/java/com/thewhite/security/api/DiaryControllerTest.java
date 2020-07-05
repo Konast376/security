@@ -1,7 +1,6 @@
 package com.thewhite.security.api;
 
 import com.google.common.collect.Lists;
-import com.thewhite.security.api.controller.DiaryController;
 import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.security.dto.UpdateDiaryDto;
