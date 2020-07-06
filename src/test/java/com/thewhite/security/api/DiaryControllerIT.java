@@ -172,7 +172,6 @@ public class DiaryControllerIT {
 
     @Test
     @DataSet(value = "/datasets/diary/api/get_by_owner.json", cleanAfter = true, cleanBefore = true)
-    @ExpectedDataSet("/datasets/diary/api/get_by_owner_expected.json")
     void getByOwner() throws Exception {
         //Arrange
         Mockito.when(authService.getAuthorizedOwnerName()).thenReturn("user1");
@@ -185,7 +184,7 @@ public class DiaryControllerIT {
                                       // Assert
                                       .expectStatus()
                                       .isOk()
-                                      .expectBody((new ParameterizedTypeReference<List<DiaryDto>>() {}))
+                                      .expectBody(new ParameterizedTypeReference<List<DiaryDto>>() {})
                                       .returnResult()
                                       .getResponseBody();
         Assertions.assertThat(result.size()).isEqualTo(1);

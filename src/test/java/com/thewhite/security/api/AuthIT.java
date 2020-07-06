@@ -3,11 +3,14 @@ package com.thewhite.security.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.jupiter.tools.spring.test.postgres.annotation.meta.EnablePostgresIntegrationTest;
 import com.jupiter.tools.spring.test.web.annotation.EnableRestTest;
+import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.util.test.matcher.CustomAssertion;
 import com.thewhite.util.test.mvc.MvcRequester;
 import org.apache.commons.codec.binary.Base64;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,6 +95,5 @@ public class AuthIT {
                 .to("/diary/owner").get()
                 .doExpect(status().isUnauthorized());
     }
-
 
 }
