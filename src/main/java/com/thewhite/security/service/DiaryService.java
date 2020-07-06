@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface DiaryService {
@@ -14,7 +15,7 @@ public interface DiaryService {
 
     Diary getExisting(@NonNull UUID id);
 
-    Diary getByOwner(@NonNull String owner);
+    List<Diary> getByOwner(@NonNull String owner);
 
     Page<Diary> getAll(@NonNull Pageable pageable);
 

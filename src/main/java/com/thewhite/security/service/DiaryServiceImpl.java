@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.apache.logging.log4j.util.Strings.trimToNull;
@@ -44,8 +45,8 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public Diary getByOwner(String owner) {
-        return repository.findAllByOwner(owner).orElseThrow(WSNotFoundException.of(DiaryErrorInfo.NOT_FOUND));
+    public List<Diary> getByOwner(String owner) {
+        return repository.findAllByOwner(owner);
     }
 
     @Transactional(readOnly = true)

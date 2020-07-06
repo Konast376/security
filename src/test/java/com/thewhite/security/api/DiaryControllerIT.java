@@ -21,6 +21,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -177,16 +178,17 @@ public class DiaryControllerIT {
         Mockito.when(authService.getAuthorizedOwnerName()).thenReturn("user1");
 
         // Act
-        DiaryDto result = client.get()
-                                .uri("/diary/owner")
-                                .exchange()
+        List<DiaryDto> result = client.get()
+                                      .uri("/diary/owner")
+                                      .exchange()
 
-                                // Assert
-                                .expectStatus()
-                                .isOk()
-                                .expectBody(DiaryDto.class)
-                                .returnResult()
-                                .getResponseBody();
-        Assertions.assertThat(result).isEqualTo(expectedDto);
+                                      // Assert
+                                      .expectStatus()
+                                      .isOk()
+                                      .expectBody((new ParameterizedTypeReference<List<DiaryDto>>() {}))
+                                      .returnResult()
+                                      .getResponseBody();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.get(0)).isEqualToComparingFieldByField(expectedDto);
     }
 }

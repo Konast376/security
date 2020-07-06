@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -123,11 +124,11 @@ import static org.mockito.Mockito.*;
     @Test
     void getByOwner() {
         //Arrange
-        Diary diary = mock(Diary.class);
-        when(repository.findAllByOwner("owner")).thenReturn(Optional.of(diary));
+        List<Diary> diary = mock(List.class);
+        when(repository.findAllByOwner("owner")).thenReturn(diary);
 
         //Act
-        Diary result = service.getByOwner("owner");
+        List<Diary> result = service.getByOwner("owner");
 
         //Assert
         assertEquals(diary, result);

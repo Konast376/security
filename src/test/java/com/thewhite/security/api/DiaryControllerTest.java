@@ -12,7 +12,6 @@ import com.thewhite.security.service.argument.CreateDiaryArgument;
 import com.thewhite.security.service.argument.UpdateDiaryArgument;
 import com.whitesoft.api.dto.CollectionDTO;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +32,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 /**
  * @author Konstantin Khudin
  */
-@ExtendWith({MockitoExtension.class, SoftAssertionsExtension.class})
+@ExtendWith(MockitoExtension.class)
 public class DiaryControllerTest {
 
     @InjectMocks
@@ -132,21 +132,22 @@ public class DiaryControllerTest {
     }
 
     @Test
-    void getUserDetails() {
+    void getUserRecords() {
         //Arrange
         String owner = "owner";
         when(authService.getAuthorizedOwnerName()).thenReturn(owner);
 
         Diary diary = mock(Diary.class);
-        when(service.getByOwner(owner)).thenReturn(diary);
+        List<Diary> list = Lists.newArrayList(diary);
+        when(service.getByOwner(owner)).thenReturn(Lists.newArrayList(list));
 
         DiaryDto dto = mock(DiaryDto.class);
         when(mapper.toDto(any(Diary.class))).thenReturn(dto);
 
         //Act
-        DiaryDto result = controller.getUserRecords();
+        List<DiaryDto> result = controller.getUserRecords();
 
         //Assert
-        Assertions.assertThat(result).isEqualTo(dto);
+        Assertions.assertThat(result).containsOnly(dto);
     }
 }

@@ -11,15 +11,13 @@ import com.thewhite.security.service.argument.UpdateDiaryArgument;
 import com.whitesoft.api.dto.CollectionDTO;
 import com.whitesoft.api.mappers.MapperUtils;
 import io.swagger.annotations.ApiOperation;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -81,10 +79,9 @@ public class DiaryController {
     }
 
     @ApiOperation("Записи пользователя")
-    @RequestMapping(value = "/owner", method = RequestMethod.GET)
-    public DiaryDto getUserRecords() {
-       String owner = authService.getAuthorizedOwnerName();
-       return MapperUtils.getMapper(mapper::toDto)
-               .apply(service.getByOwner(owner));
+    @GetMapping("/owner")
+    public List<DiaryDto> getUserRecords() {
+        String owner = authService.getAuthorizedOwnerName();
+        return MapperUtils.mapList(mapper::toDto, service.getByOwner(owner));
     }
 }
