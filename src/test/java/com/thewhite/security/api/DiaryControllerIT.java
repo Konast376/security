@@ -6,14 +6,17 @@ import com.jupiter.tools.spring.test.postgres.annotation.meta.EnablePostgresInte
 import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.security.dto.UpdateDiaryDto;
+import com.thewhite.security.service.AuthService;
 import com.whitesoft.api.dto.CollectionDTO;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -31,6 +34,9 @@ public class DiaryControllerIT {
 
     @Autowired
     private WebTestClient client;
+
+    @MockBean
+    AuthService authService;
 
     private final UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
     final DiaryDto expectedDto = DiaryDto.builder()
@@ -161,5 +167,26 @@ public class DiaryControllerIT {
               // Assert
               .expectStatus()
               .isOk();
+    }
+
+    @Test
+    @DataSet(value = "/datasets/diary/api/get_by_owner.json", cleanAfter = true, cleanBefore = true)
+    @ExpectedDataSet("/datasets/diary/api/get_by_owner_expected.json")
+    void getByOwner() throws Exception {
+        //Arrange
+        Mockito.when(authService.getAuthorizedOwnerName()).thenReturn("user1");
+
+        // Act
+        DiaryDto result = client.get()
+                                .uri("/diary/owner")
+                                .exchange()
+
+                                // Assert
+                                .expectStatus()
+                                .isOk()
+                                .expectBody(DiaryDto.class)
+                                .returnResult()
+                                .getResponseBody();
+        Assertions.assertThat(result).isEqualTo(expectedDto);
     }
 }

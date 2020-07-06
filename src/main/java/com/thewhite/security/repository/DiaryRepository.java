@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface DiaryRepository extends BaseRepository<Diary> {
 
-    Optional<Diary> findByOwner(String owner);
+    Optional<Diary> findAllByOwner(String owner);
 }

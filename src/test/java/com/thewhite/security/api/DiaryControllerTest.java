@@ -144,7 +144,7 @@ public class DiaryControllerTest {
         when(mapper.toDto(any(Diary.class))).thenReturn(dto);
 
         //Act
-        DiaryDto result = controller.getUserDetails();
+        DiaryDto result = controller.getUserRecords();
 
         //Assert
         Assertions.assertThat(result).isEqualTo(dto);

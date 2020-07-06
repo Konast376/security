@@ -82,7 +82,7 @@ public class DiaryController {
 
     @ApiOperation("Записи пользователя")
     @RequestMapping(value = "/owner", method = RequestMethod.GET)
-    public DiaryDto getUserDetails() {
+    public DiaryDto getUserRecords() {
        String owner = authService.getAuthorizedOwnerName();
        return MapperUtils.getMapper(mapper::toDto)
                .apply(service.getByOwner(owner));

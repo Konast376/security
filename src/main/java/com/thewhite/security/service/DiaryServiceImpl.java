@@ -45,7 +45,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Transactional(readOnly = true)
     public Diary getByOwner(String owner) {
-        return repository.findByOwner(owner).orElseThrow(WSNotFoundException.of(DiaryErrorInfo.NOT_FOUND));
+        return repository.findAllByOwner(owner).orElseThrow(WSNotFoundException.of(DiaryErrorInfo.NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

@@ -124,7 +124,7 @@ import static org.mockito.Mockito.*;
     void getByOwner() {
         //Arrange
         Diary diary = mock(Diary.class);
-        when(repository.findByOwner("owner")).thenReturn(Optional.of(diary));
+        when(repository.findAllByOwner("owner")).thenReturn(Optional.of(diary));
 
         //Act
         Diary result = service.getByOwner("owner");

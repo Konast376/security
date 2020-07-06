@@ -90,7 +90,6 @@ public class AuthIT {
                 .on(mockMvc)
                 .to("/diary/owner").get()
                 .doExpect(status().isUnauthorized());
-
     }
 
 
