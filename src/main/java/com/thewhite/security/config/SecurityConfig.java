@@ -40,13 +40,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .httpBasic();
     }
-
-    /** @Override protected void configure(HttpSecurity http) throws Exception {
-    http.httpBasic().and()
-    .authorizeRequests()
-    .anyRequest().permitAll()
-    .and()
-    .csrf().disable()
-    .anonymous();
-    }*/
 }
