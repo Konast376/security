@@ -2,7 +2,7 @@
   "diary": [
     {
       "id": "00000000-0000-0000-0000-000000000000",
-      "owner": "user1",
+      "owner": "user",
       "title": "1",
       "record": "first",
       "record_date": "2019-05-20 21:15:30.0"

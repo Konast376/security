@@ -2,7 +2,7 @@
   "diary": [
     {
       "id": "regex:.+",
-      "owner": "user1",
+      "owner": "user",
       "title": "1",
       "record": "first",
       "record_date": "2019-05-20 21:15:30.0"

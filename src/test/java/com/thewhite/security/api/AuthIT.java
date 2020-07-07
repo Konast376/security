@@ -95,5 +95,4 @@ public class AuthIT {
                 .to("/diary/owner").get()
                 .doExpect(status().isUnauthorized());
     }
-
 }

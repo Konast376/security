@@ -1,12 +1,15 @@
 package com.thewhite.security.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.jupiter.tools.spring.test.postgres.annotation.meta.EnablePostgresIntegrationTest;
+import com.jupiter.tools.spring.test.web.annotation.EnableRestTest;
 import com.thewhite.security.dto.CreateDiaryDto;
 import com.thewhite.security.dto.DiaryDto;
 import com.thewhite.security.dto.UpdateDiaryDto;
 import com.thewhite.security.service.AuthService;
+import com.thewhite.util.test.mvc.MvcRequester;
 import com.whitesoft.api.dto.CollectionDTO;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -14,19 +17,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * @author Konstantin Khudin
  */
+@EnableRestTest
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnablePostgresIntegrationTest
@@ -34,17 +41,23 @@ import java.util.UUID;
 public class DiaryControllerIT {
 
     @Autowired
-    private WebTestClient client;
+    private MockMvc mockMvc;
 
     @MockBean
     AuthService authService;
+
+    @Value("user")
+    protected String name;
+
+    @Value("password")
+    protected String password;
 
     private final UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
     final DiaryDto expectedDto = DiaryDto.builder()
                                          .id(id)
                                          .title("1")
                                          .record("first")
-                                         .owner("user1")
+                                         .owner("user")
                                          .recordDate(Timestamp.valueOf("2019-05-20 21:15:30.0"))
                                          .build();
 
@@ -56,21 +69,19 @@ public class DiaryControllerIT {
         CreateDiaryDto diaryDto = CreateDiaryDto.builder()
                                                 .title("1")
                                                 .record("first")
-                                                .owner("user1")
+                                                .owner("user")
                                                 .recordDate(Timestamp.valueOf("2019-05-20 21:15:30.0"))
                                                 .build();
         // Act
-        DiaryDto result = client.post()
-                                .uri("/diary/create")
-                                .bodyValue(diaryDto)
-                                .exchange()
+        DiaryDto result = MvcRequester.on(mockMvc)
+                                      .to("/diary/create")
+                                      .withBasicAuth(name, password)
+                                      .post(diaryDto)
 
-                                // Assert
-                                .expectStatus()
-                                .isCreated()
-                                .expectBody(DiaryDto.class)
-                                .returnResult()
-                                .getResponseBody();
+
+                                      // Assert
+                                      .doExpect(status().isCreated())
+                                      .doReturn(new TypeReference<DiaryDto>() {});
 
         Assertions.assertThat(result).isEqualToIgnoringGivenFields(expectedDto, "id");
     }
@@ -87,17 +98,14 @@ public class DiaryControllerIT {
                                                  .build();
 
         // Act
-        DiaryDto result = client.post()
-                                .uri("/diary/{id}/update", id)
-                                .bodyValue(updateDto)
-                                .exchange()
+        DiaryDto result = MvcRequester.on(mockMvc)
+                                      .to("/diary/{id}/update", id)
+                                      .withBasicAuth(name, password)
+                                      .post(updateDto)
 
-                                // Assert
-                                .expectStatus()
-                                .isOk()
-                                .expectBody(DiaryDto.class)
-                                .returnResult()
-                                .getResponseBody();
+                                      // Assert
+                                      .doExpect(status().isOk())
+                                      .doReturn(new TypeReference<DiaryDto>() {});
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -107,13 +115,13 @@ public class DiaryControllerIT {
     @ExpectedDataSet("/datasets/diary/api/empty.json")
     void getWhenNotExists() throws Exception {
         // Act
-        client.get()
-              .uri("/diary/{id}", id)
-              .exchange()
+        MvcRequester.on(mockMvc)
+                    .to("/diary/{id}", id)
+                    .withBasicAuth(name, password)
+                    .get()
 
-              // Assert
-              .expectStatus().isNotFound()
-              .expectBody().json("{\"message\":\"Запись отсутствует\"}");
+                    // Assert
+                    .doExpect(status().isNotFound());
     }
 
     @Test
@@ -121,16 +129,15 @@ public class DiaryControllerIT {
     @ExpectedDataSet("/datasets/diary/api/get.json")
     void get() throws Exception {
         // Act
-        DiaryDto result = client.get()
-                                .uri("/diary/{id}", id)
-                                .exchange()
+        DiaryDto result = MvcRequester.on(mockMvc)
+                                      .to("/diary/{id}", id)
+                                      .withBasicAuth(name, password)
+                                      .get()
 
-                                // Assert
-                                .expectStatus()
-                                .isOk()
-                                .expectBody(DiaryDto.class)
-                                .returnResult()
-                                .getResponseBody();
+                                      // Assert
+                                      .doExpect(status().isOk())
+                                      .doReturn(new TypeReference<DiaryDto>() {});
+
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
 
@@ -138,20 +145,18 @@ public class DiaryControllerIT {
     @DataSet(value = "/datasets/diary/api/list.json", cleanBefore = true, cleanAfter = true)
     void list() throws Exception {
         // Act
-        CollectionDTO<DiaryDto> result = client.get().uri(uriBuilder -> uriBuilder.path("/diary/list")
-                                                                                  .queryParam("pageNo", 1)
-                                                                                  .queryParam("pageSize", 1)
-                                                                                  .queryParam("sortField", "id")
-                                                                                  .queryParam("sortDirection", "DESC")
-                                                                                  .build())
+        CollectionDTO<DiaryDto> result = MvcRequester.on(mockMvc).to("/diary/list")
+                                                     .withParam("pageNo", 1)
+                                                     .withParam("pageSize", 1)
+                                                     .withParam("sortField", "id")
+                                                     .withParam("sortDirection", "DESC")
+                                                     .withBasicAuth(name, password)
+                                                     .get()
 
-                                               .exchange()
+                                                     // Assert
+                                                     .doExpect(status().isOk())
+                                                     .doReturn(new TypeReference<CollectionDTO<DiaryDto>>() {});
 
-                                               // Assert
-                                               .expectStatus()
-                                               .isOk()
-                                               .expectBody(new ParameterizedTypeReference<CollectionDTO<DiaryDto>>() {})
-                                               .returnResult().getResponseBody();
         Assertions.assertThat(result.getTotalCount()).isEqualTo(2);
         Assertions.assertThat(result.getItems().get(0)).isEqualToIgnoringGivenFields(expectedDto, "id");
     }
@@ -161,32 +166,31 @@ public class DiaryControllerIT {
     @ExpectedDataSet("/datasets/diary/api/empty.json")
     void delete() throws Exception {
         // Act
-        client.post()
-              .uri("/diary/{id}/delete", id)
-              .exchange()
+        MvcRequester.on(mockMvc)
+                    .to("/diary/{id}/delete", id)
+                    .withBasicAuth(name, password)
+                    .post()
 
-              // Assert
-              .expectStatus()
-              .isOk();
+                    // Assert
+                    .doExpect(status().isOk());
     }
 
     @Test
     @DataSet(value = "/datasets/diary/api/get_by_owner.json", cleanAfter = true, cleanBefore = true)
     void getByOwner() throws Exception {
         //Arrange
-        Mockito.when(authService.getAuthorizedOwnerName()).thenReturn("user1");
+        Mockito.when(authService.getAuthorizedOwnerName()).thenReturn("user");
 
         // Act
-        List<DiaryDto> result = client.get()
-                                      .uri("/diary/owner")
-                                      .exchange()
+        List<DiaryDto> result = MvcRequester.on(mockMvc)
+                                            .to("/diary/owner")
+                                            .withBasicAuth(name, password)
+                                            .get()
 
-                                      // Assert
-                                      .expectStatus()
-                                      .isOk()
-                                      .expectBody(new ParameterizedTypeReference<List<DiaryDto>>() {})
-                                      .returnResult()
-                                      .getResponseBody();
+                                            // Assert
+                                            .doExpect(status().isOk())
+                                            .doReturn(new TypeReference<List<DiaryDto>>() {});
+
         Assertions.assertThat(result.size()).isEqualTo(1);
         Assertions.assertThat(result.get(0)).isEqualToComparingFieldByField(expectedDto);
     }
